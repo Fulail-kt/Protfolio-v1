@@ -32,7 +32,7 @@ export default function Hero() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
               </span>
               <span className="text-xs font-mono text-ink-tertiary tracking-[0.15em] uppercase">
-                {profile.currentStatus} · Particle Execution
+                Lead Full Stack Developer · Particle Execution
               </span>
             </div>
 
@@ -98,7 +98,7 @@ export default function Hero() {
               <a
                 href="/Fulail-KT-Resume.pdf"
                 download
-                className="inline-flex items-center gap-2 border border-ink/20 text-ink text-sm px-5 py-2.5 font-medium hover:border-ink/50 hover:bg-white transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
+                className="inline-flex items-center gap-2 border border-dashed border-ink/35 bg-surface-muted text-ink text-sm px-5 py-2.5 font-medium hover:bg-surface-border/40 hover:border-ink/60 transition-colors focus-visible:ring-2 focus-visible:ring-accent focus-visible:outline-none"
               >
                 <Download size={13} />
                 Resume

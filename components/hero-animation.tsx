@@ -69,6 +69,40 @@ export function HeroAnimation() {
     let velX = 0, velY = 0;
     const ripples: { ni: number; t: number }[] = [];
 
+    function physicsStep(w: number, h: number) {
+      const cx = w / 2, cy = h / 2;
+      const m = NR_H + 18;
+      for (let i = 0; i < nodes.length; i++) {
+        let fx = 0, fy = 0;
+        for (let j = 0; j < nodes.length; j++) {
+          if (i === j) continue;
+          const dx = nodes[i].x - nodes[j].x;
+          const dy = nodes[i].y - nodes[j].y;
+          const d2 = dx * dx + dy * dy || 1;
+          const d = Math.sqrt(d2);
+          fx += (dx / d) * (REPULSION / d2);
+          fy += (dy / d) * (REPULSION / d2);
+        }
+        adj[i].forEach(j => {
+          const dx = nodes[j].x - nodes[i].x;
+          const dy = nodes[j].y - nodes[i].y;
+          const d = Math.sqrt(dx * dx + dy * dy) || 1;
+          const f = SPRING_K * (d - REST);
+          fx += (dx / d) * f; fy += (dy / d) * f;
+        });
+        fx += (cx - nodes[i].x) * CENTER_K;
+        fy += (cy - nodes[i].y) * CENTER_K;
+        nodes[i].vx = (nodes[i].vx + fx) * DAMP;
+        nodes[i].vy = (nodes[i].vy + fy) * DAMP;
+        nodes[i].x += nodes[i].vx;
+        nodes[i].y += nodes[i].vy;
+        if (nodes[i].x < m) { nodes[i].x = m; nodes[i].vx *= -0.4; }
+        if (nodes[i].x > w - m) { nodes[i].x = w - m; nodes[i].vx *= -0.4; }
+        if (nodes[i].y < m) { nodes[i].y = m; nodes[i].vy *= -0.4; }
+        if (nodes[i].y > h - m) { nodes[i].y = h - m; nodes[i].vy *= -0.4; }
+      }
+    }
+
     function init(w: number, h: number) {
       W = w; H = h;
       const dpr = window.devicePixelRatio || 1;
@@ -86,6 +120,11 @@ export function HeroAnimation() {
         vx: (Math.random() - 0.5) * 1.5,
         vy: (Math.random() - 0.5) * 1.5,
       }));
+
+      // pre-warm: run physics silently so nodes appear already settled
+      for (let i = 0; i < 220; i++) physicsStep(w, h);
+      // zero out residual velocity for a calm start
+      nodes.forEach(n => { n.vx *= 0.1; n.vy *= 0.1; });
     }
 
     function hitTest(mx: number, my: number) {
@@ -166,47 +205,12 @@ export function HeroAnimation() {
       const cx = W / 2, cy = H / 2;
       const t = Date.now() / 1000;
 
-      // physics
-      for (let i = 0; i < nodes.length; i++) {
-        if (i === drag) continue;
-        let fx = 0, fy = 0;
-
-        // repulsion
-        for (let j = 0; j < nodes.length; j++) {
-          if (i === j) continue;
-          const dx = nodes[i].x - nodes[j].x;
-          const dy = nodes[i].y - nodes[j].y;
-          const d2 = dx * dx + dy * dy || 1;
-          const d = Math.sqrt(d2);
-          const f = REPULSION / d2;
-          fx += (dx / d) * f; fy += (dy / d) * f;
-        }
-
-        // springs
-        adj[i].forEach(j => {
-          const dx = nodes[j].x - nodes[i].x;
-          const dy = nodes[j].y - nodes[i].y;
-          const d = Math.sqrt(dx * dx + dy * dy) || 1;
-          const f = SPRING_K * (d - REST);
-          fx += (dx / d) * f; fy += (dy / d) * f;
-        });
-
-        // center gravity
-        fx += (cx - nodes[i].x) * CENTER_K;
-        fy += (cy - nodes[i].y) * CENTER_K;
-
-        nodes[i].vx = (nodes[i].vx + fx) * DAMP;
-        nodes[i].vy = (nodes[i].vy + fy) * DAMP;
-        nodes[i].x += nodes[i].vx;
-        nodes[i].y += nodes[i].vy;
-
-        // walls
-        const m = NR_H + 18; // label headroom
-        if (nodes[i].x < m)     { nodes[i].x = m;     nodes[i].vx *= -0.4; }
-        if (nodes[i].x > W - m) { nodes[i].x = W - m; nodes[i].vx *= -0.4; }
-        if (nodes[i].y < m)     { nodes[i].y = m;     nodes[i].vy *= -0.4; }
-        if (nodes[i].y > H - m) { nodes[i].y = H - m; nodes[i].vy *= -0.4; }
-      }
+      // physics (skip dragged node)
+      const dragged = drag;
+      if (dragged !== -1) { nodes[dragged].vx = 0; nodes[dragged].vy = 0; }
+      physicsStep(W, H);
+      // keep dragged node pinned to cursor
+      if (dragged !== -1) { nodes[dragged].vx = 0; nodes[dragged].vy = 0; }
 
       // advance ripples
       for (let i = ripples.length - 1; i >= 0; i--) {
