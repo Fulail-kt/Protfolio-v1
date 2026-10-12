@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { profile } from "@/content/profile";
+import { ChatWidget } from "@/components/chat-widget";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -114,7 +115,10 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-white text-ink antialiased font-sans">{children}</body>
+      <body className="bg-white text-ink antialiased font-sans">
+        {children}
+        <ChatWidget />
+      </body>
     </html>
   );
 }
