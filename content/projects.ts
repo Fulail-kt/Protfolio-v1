@@ -21,9 +21,9 @@ export const projects: Project[] = [
     name: "Particle Signals",
     tagline: "AI Market Intelligence for Recruiters",
     description:
-      "Recruitment intelligence platform that monitors the UK market for hiring signals - funding rounds, hiring spikes, leadership changes, and Companies House filings - and surfaces decision-maker contacts with personalized outreach suggestions before job ads go live. Integrates with Teams and Slack for consultant approval workflows.",
+      "AI layer for recruitment agencies that watches companies on each consultant's patch and, when something changes - a new decision-maker, funding or growth, a hiring spike, or a role left open - ranks the opportunity and drafts a short three-email sequence in that consultant's voice, using only facts the system already holds. Surfaces decision-maker contacts on demand. Nothing goes out until the consultant approves the sequence, in Teams, Slack, WhatsApp, or the web queue, and it sends from their own mailbox.",
     contribution:
-      "Currently contributing to the full platform at Particle Execution - signal ingestion pipeline, AI ranking and scoring, decision-maker enrichment, outreach copy generation, and Teams/Slack approval workflow integration.",
+      "Currently contributing across the full platform at Particle Execution - the overnight signal pipeline, ranking and scoring, decision-maker enrichment, outreach sequence generation, and the Teams, Slack, and web-queue approval workflow.",
     technologies: [
       "Next.js",
       "TypeScript",
